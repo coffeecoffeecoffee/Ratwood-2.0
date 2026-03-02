@@ -3680,12 +3680,6 @@
 "te" = (
 /turf/closed/wall/mineral/rogue/craftstone,
 /area/rogue/under/cave/inhumen/wretch/camp)
-"tf" = (
-/obj/effect/particle_effect/smoke{
-	lifetime = 14400
-	},
-/turf/open/water/river/flow,
-/area/rogue)
 "tg" = (
 /obj/structure/well,
 /turf/open/floor/rogue/dirt/road,
@@ -4148,8 +4142,14 @@
 /turf/open/floor/rogue/dirt,
 /area/rogue/indoors)
 "wo" = (
-/turf/open/water/river/flow,
-/area/rogue)
+/obj/effect/particle_effect/smoke{
+	lifetime = 14400
+	},
+/turf/closed/mineral/rogue/bedrock,
+/area/rogue/outdoors/woods{
+	first_time_text = "Murder Pass";
+	name = "Bandit Woods"
+	})
 "wp" = (
 /obj/structure/curtain/red,
 /turf/open/floor/rogue/herringbone,
@@ -9656,13 +9656,13 @@ vp
 bX
 bX
 bX
-wo
-wo
-wo
+Zw
+Zw
+Zw
 bX
-tf
-wo
-wo
+QB
+Zw
+Zw
 Zw
 Zw
 Zw
@@ -9785,12 +9785,12 @@ uL
 vp
 bX
 bX
-wo
-wo
-wo
-wo
-wo
-wo
+Zw
+Zw
+Zw
+Zw
+Zw
+Zw
 Zw
 Zw
 Zw
@@ -9919,7 +9919,7 @@ zq
 zq
 zq
 zq
-QB
+wo
 Zw
 Zw
 Zw
@@ -11068,7 +11068,7 @@ bX
 bX
 vp
 vp
-vp
+BF
 vp
 vp
 vp
