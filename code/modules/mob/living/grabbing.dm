@@ -38,7 +38,9 @@
 	valid_check()
 
 /obj/item/grabbing/proc/valid_check()
-	// We require adjacency to count the grab as valid
+	if(!grabbee || !grabbed)
+		qdel(src)
+		return FALSE
 	if(grabbee.Adjacent(grabbed))
 		return TRUE
 	grabbee.stop_pulling(FALSE)
@@ -113,6 +115,7 @@
 			grabbee.l_grab = null
 		if(grabbee.mouth == src)
 			grabbee.mouth = null
+		grabbee = null
 	for(var/datum/D in dependents)
 		D.grabdropped(src)
 	return ..()
