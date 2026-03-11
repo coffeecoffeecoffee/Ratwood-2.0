@@ -160,8 +160,8 @@
 	icon_state = "construct_upgrade"
 	w_class = WEIGHT_CLASS_SMALL
 	smeltresult = /obj/item/ingot/bronze
-	var/self_usable = FALSE //allow construct to use it on themselves without skill reqs, exclusively used for the black market ver
-	var/in_use = FALSE //to avoid situations where the dialog box is open but you click the golem again with it
+	var/self_usable = FALSE ///allow construct to use it on themselves without skill reqs, exclusively used for the black market ver
+	var/in_use = FALSE ///to avoid situations where the dialog box is open but you click the golem again with it
 
 /obj/item/construct_skill_core/blackmarket
 	name = "modified construct skill exhibitor"
@@ -200,13 +200,14 @@
 
 	var/list/learnable_skills = list()
 	var/list/skill_datums = list()
-	if(M.mind)
-		for(var/skill_type in SSskills.all_skills)
-			var/datum/skill/skill = GetSkillRef(skill_type)
-			if(skill in M.skills?.known_skills)
-				if(M?.mind?.sleep_adv.enough_sleep_xp_to_advance(skill_type, 1))
-					LAZYADD(learnable_skills, skill)//we need the actual names of the skill_types so the dialog boxes say "Skill" rather than the type path
-					LAZYADD(skill_datums,skill_type)//hold the skill datums so we can reference them later to use in our leveling up procs
+	if(!M.mind)
+		return
+	for(var/skill_type in SSskills.all_skills)
+		var/datum/skill/skill = GetSkillRef(skill_type)
+		if(skill in M.skills?.known_skills)
+			if(M?.mind?.sleep_adv.enough_sleep_xp_to_advance(skill_type, 1))
+				LAZYADD(learnable_skills, skill)//we need the actual names of the skill_types so the dialog boxes say "Skill" rather than the type path
+				LAZYADD(skill_datums,skill_type)//hold the skill datums so we can reference them later to use in our leveling up procs
 
 	if(!length(learnable_skills))//don't waste the core if we can't use it
 		to_chat(user, span_warning("[M] has no new skills to develop."))
@@ -223,30 +224,30 @@
 		return
 
 	var/skill_choice = input(M, "Improve yourself.","Skills") as null|anything in learnable_skills
-	if(skill_choice)
-		for(var/real_skill in skill_datums)//really ugly but I can't think of a way to implement this to show the skill names properly in the dialog box. real_skill is the actual datum for the skill rather than the "Skill" string
-			if(skill_choice == GetSkillRef(real_skill))
-				if(!M?.mind?.sleep_adv.enough_sleep_xp_to_advance(real_skill, 1))//this should only ever happen if you try and install two knowledge cores at the same time for the same skill, which we don't want to happen
-					user.visible_message(span_notice("[src] fizzles in [user]'s hand."), span_notice("[src] fizzles and returns to a resting state."))
-					disable()
-					return
-				M.mind.sleep_adv.adjust_sleep_xp(real_skill, -M.mind.sleep_adv.get_requried_sleep_xp_for_skill(real_skill, 1))
-				M.adjust_skillrank(real_skill, 1, FALSE)
-				//GLOB.scarlet_round_stats[STATS_SKILLS_DREAMED]++ //up for debate whether golems gaining skills like this should count
-				M.visible_message(span_notice("[M] absorbs [src]."), span_notice("I absorb [src] into myself, becoming more skilled."))
-				if(M.get_skill_level(real_skill) >= 4)//if our skill is now expert or more, gain a triumph
-					to_chat(M, span_boldgreen("Gaining such exquisite expertise in [lowertext(skill_choice)] is a true TRIUMPH."))
-					M.adjust_triumphs(1)
-				M.allmig_reward++//we also need to do this for RCP and endround triumphs- it's the closest thing Golems have to sleeping.
-				qdel(src)
-				return
-	else //if you click "cancel" in the dialog
-		user.visible_message(span_notice("[src] deactivates in [user]'s hand."), span_notice("[src] turns off. Perhaps [M] does not yet wish to improve?"))
-		disable()
+	if(!skill_choice)
 		return
+	for(var/real_skill in skill_datums)//really ugly but I can't think of a way to implement this to show the skill names properly in the dialog box. real_skill is the actual datum for the skill rather than the "Skill" string
+		if(skill_choice == GetSkillRef(real_skill))
+			if(!M?.mind?.sleep_adv.enough_sleep_xp_to_advance(real_skill, 1))//this should only ever happen if you try and install two knowledge cores at the same time for the same skill, which we don't want to happen
+				user.visible_message(span_notice("[src] fizzles in [user]'s hand."), span_notice("[src] fizzles and returns to a resting state."))
+				disable()
+				return
+			M.mind.sleep_adv.adjust_sleep_xp(real_skill, -M.mind.sleep_adv.get_requried_sleep_xp_for_skill(real_skill, 1))
+			M.adjust_skillrank(real_skill, 1, FALSE)
+			//GLOB.scarlet_round_stats[STATS_SKILLS_DREAMED]++ //up for debate whether golems gaining skills like this should count
+			M.visible_message(span_notice("[M] absorbs [src]."), span_notice("I absorb [src] into myself, becoming more skilled."))
+			if(M.get_skill_level(real_skill) >= 4)//if our skill is now expert or more, gain a triumph
+				to_chat(M, span_boldgreen("Gaining such exquisite expertise in [lowertext(skill_choice)] is a true TRIUMPH."))
+				M.adjust_triumphs(1)
+			M.allmig_reward++//we also need to do this for RCP and endround triumphs- it's the closest thing Golems have to sleeping.
+			qdel(src)
+			return
+		else //if you click "cancel" in the dialog
+			user.visible_message(span_notice("[src] deactivates in [user]'s hand."), span_notice("[src] turns off. Perhaps [M] does not yet wish to improve?"))
+			disable()
+			return
 
 /obj/item/construct_skill_core/proc/disable() //reset it to inactive mode to be paired later on
 	in_use = FALSE
 	smeltresult = /obj/item/ingot/bronze
-	return
-
+	
